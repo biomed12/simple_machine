@@ -21,7 +21,7 @@ $./main
 -s-I-  
 
 
-* I assumed, gcc toolchain was added path in your machine envs.
+* I assumed, gcc toolchain was added to PATH.
 
 You can find the UML StateCharts representation of the implemented machine at the link:
 
