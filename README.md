@@ -4,20 +4,21 @@ A simple state machine design framework for embedded systems.
 
 You can create your own makefile or simply run the shell command to see the application result:
 
-* $gcc.exe main.c exm/* sm/* -o main
-* $./main
--topmost initial -s-entry--s2-entry--s2-init--s21-entry--s211-entry-
--s21-G--s211-exit--s21-exit--s2-exit--s1-entry- -s1-init- -s11-entry-
--s1-I:
--s1-A: -s11-exit- -s1-exit- -s1-entry- -s1-init- -s11-entry-
--s1-D:-s11-exit- -s1-exit- -s-init--s1-entry- -s11-entry-
--s11-D:-s11-exit- -s1-init- -s11-entry-
--s1-C:-s11-exit- -s1-exit- -s2-entry--s2-init--s21-entry--s211-entry-
--s-E:-s211-exit--s21-exit--s2-exit--s1-entry- -s11-entry-
--s-E:-s11-exit- -s1-exit- -s1-entry- -s11-entry-
--s11-G:-s11-exit- -s1-exit- -s2-entry--s21-entry--s211-entry-
--s2-I-
--s-I-
+$gcc.exe main.c exm/* sm/* -o main  
+$./main  
+
+-topmost initial -s-entry--s2-entry--s2-init--s21-entry--s211-entry-  
+-s21-G--s211-exit--s21-exit--s2-exit--s1-entry- -s1-init- -s11-entry-  
+-s1-I:  
+-s1-A: -s11-exit- -s1-exit- -s1-entry- -s1-init- -s11-entry-  
+-s1-D:-s11-exit- -s1-exit- -s-init--s1-entry- -s11-entry-  
+-s11-D:-s11-exit- -s1-init- -s11-entry-  
+-s1-C:-s11-exit- -s1-exit- -s2-entry--s2-init--s21-entry--s211-entry-  
+-s-E:-s211-exit--s21-exit--s2-exit--s1-entry- -s11-entry-  
+-s-E:-s11-exit- -s1-exit- -s1-entry- -s11-entry-  
+-s11-G:-s11-exit- -s1-exit- -s2-entry--s21-entry--s211-entry-  
+-s2-I-  
+-s-I-  
 
 
 * I assumed, gcc toolchain was added path in your machine envs.
