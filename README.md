@@ -1,6 +1,8 @@
 # Simple machine state machine design framework.
 
-A simple state machine design framework for embedded systems.
+A simple state machine design framework for embedded systems.  
+"sm" directory contains core algorithm.  
+"exm" directory contains an example machine.  
 
 You can create your own makefile or simply run the shell command to see the application result:
 
