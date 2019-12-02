@@ -29,6 +29,8 @@ void sm_init(machine_t* machine,
 			 int size,
 			 assertion_callback_t assert)
 {
+	sm_set_assertion_callback(assert);
+	
 	SM_ASSERT(machine != 0, machine, "MACHINE OBJECT IS NULL");
 	SM_ASSERT(table != 0, machine, "TABLE OBJECT IS NULL");
 	SM_ASSERT(initial_handler != 0, machine, "INITIAL HANDLER IS NULL");
@@ -42,7 +44,7 @@ void sm_init(machine_t* machine,
 	machine->table_size = size;
 	machine->current_state = 0;
 	machine->top_initial_handler = initial_handler;
-	sm_set_assertion_callback(assert);
+	
 }
 
 static int is_available(machine_t* mach, state_t* s)
