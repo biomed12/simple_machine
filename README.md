@@ -22,7 +22,7 @@ $./main
 
 * I assumed, gcc toolchain was added to PATH.
 
-You can find the UML StateCharts representation of the implemented machine at the link:
+You can find the UML StateChart representation of the implemented machine at the link:
 
 https://i.hizliresim.com/kMPrjJ.png
 
