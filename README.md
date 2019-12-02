@@ -6,7 +6,6 @@ You can create your own makefile or simply run the shell command to see the appl
 
 $gcc.exe main.c exm/* sm/* -o main  
 $./main  
-
 -topmost initial -s-entry--s2-entry--s2-init--s21-entry--s211-entry-  
 -s21-G--s211-exit--s21-exit--s2-exit--s1-entry- -s1-init- -s11-entry-  
 -s1-I:  
