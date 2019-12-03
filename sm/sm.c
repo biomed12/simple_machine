@@ -14,14 +14,6 @@ void sm_set_assertion_callback(assertion_callback_t cb)
 	assertion_callback = cb;
 }
 
-
-typedef struct _tick_list
-{
-	machine_t* list;
-	int size;
-	int freq;
-}tick_list;
-
 void sm_init(machine_t* machine,
 			 void* ctx,
 			 state_t** table,
