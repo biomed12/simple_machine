@@ -8,38 +8,7 @@
 #include "sm.h"
 #include <string.h>
 
-static assertion_callback_t assertion_callback;
-void sm_set_assertion_callback(assertion_callback_t cb)
-{
-	assertion_callback = cb;
-}
-
-void sm_init(machine_t* machine,
-			 void* ctx,
-			 state_t** table,
-			 initial_handler_t initial_handler,
-			 int size,
-			 assertion_callback_t assert)
-{
-	sm_set_assertion_callback(assert);
-	
-	SM_ASSERT(machine != 0, machine, "MACHINE OBJECT IS NULL");
-	SM_ASSERT(table != 0, machine, "TABLE OBJECT IS NULL");
-	SM_ASSERT(initial_handler != 0, machine, "INITIAL HANDLER IS NULL");
-	SM_ASSERT(size != 0, machine, "SIZE IS ZERO");
-	SM_ASSERT(assert != 0, machine, "ASSERT CALLBACK IS NULL");
-
-	memset(machine, 0, sizeof(machine_t));
-
-	machine->ctx = ctx;
-	machine->table = table;
-	machine->table_size = size;
-	machine->current_state = 0;
-	machine->top_initial_handler = initial_handler;
-	
-}
-
-static int is_available(machine_t* mach, state_t* s)
+static int is_available(machine_t* mach, const state_t* s)
 {
 	for(int i = 0; i < mach->table_size; i++)
 	{
@@ -79,55 +48,55 @@ static void post_exit(machine_t* mach)
 }
 
 
-static int is_target_a_parent(machine_t* machine, state_t* target)
+static int is_target_a_parent(machine_t* machine, const state_t* target)
 {
-	state_t* temp = machine->current_state;
+	const state_t* temp = machine->current_state;
 	while(temp != 0)
 	{
 		if(temp->parent == target)
 		{
 			return 1;
 		}
-		temp = (state_t*)temp->parent;
+		temp = temp->parent;
 	}
 
 	return 0;
 }
 
-static int is_target_a_child(machine_t* machine, state_t* target)
+static int is_target_a_child(machine_t* machine, const state_t* target)
 {
-	state_t* temp = target;
+	const state_t* temp = target;
 	while(temp->parent != 0)
 	{
 		if(temp->parent == machine->current_state)
 		{
 			return 1;
 		}
-		temp = (state_t*)temp->parent;
+		temp = temp->parent;
 	}
 
 	return 0;
 }
 
-static state_t* top_parent(state_t* target)
+static const state_t* top_parent(const state_t* target)
 {
-	state_t* temp = target;
+	const state_t* temp = target;
 
 	while(temp->parent != 0)
 	{
-		temp = (state_t*)temp->parent;
+		temp = temp->parent;
 	}
 
 	return temp;
 }
 
-static void transit(machine_t* machine, state_t* target)
+static void transit(machine_t* machine, const state_t* target)
 {
-	state_t* entry_begin = 0;
-	state_t* entry_end = 0;
+	const state_t* entry_begin = 0;
+	const state_t* entry_end = 0;
 
-	state_t* exit_begin = 0;
-	state_t* exit_end = 0;
+	const state_t* exit_begin = 0;
+	const state_t* exit_end = 0;
 
 label_again:
 
@@ -146,10 +115,10 @@ label_again:
 			//there is no exit...
 			entry_end = target;
 
-			state_t* temp = entry_end;
+			const state_t* temp = entry_end;
 			while(temp->parent != machine->current_state)
 			{
-				temp = (state_t*) temp->parent;
+				temp =  temp->parent;
 			}
 
 			entry_begin = temp;
@@ -176,7 +145,7 @@ label_again:
 
 					if((result != HANDLED()) && (result != UNHANDLED()))
 					{
-						target = (state_t*)result;
+						target = (const state_t*)result;
 						goto label_again;
 					}
 
@@ -185,28 +154,28 @@ label_again:
 				else
 					{
 						//find common parent
-						state_t* begin = machine->current_state;
-						state_t* end = target;
-						state_t* common_parent = 0;
+						const state_t* begin = machine->current_state;
+						const state_t* end = target;
+						const state_t* common_parent = 0;
 
 						while((begin != 0) && (end != 0))
 						{
-							state_t* temp = end;
+							const state_t* temp = end;
 
 							while(temp != 0)
 							{
 								if(temp->parent == begin->parent)
 								{
-									common_parent = (state_t*)temp->parent;
+									common_parent = temp->parent;
 
 									//exit borders...
 									exit_begin = machine->current_state;
 
 									//find lower than common parent
-									state_t* temp = exit_begin;
+									const state_t* temp = exit_begin;
 									while(temp->parent != common_parent)
 									{
-										temp = (state_t*)temp->parent;
+										temp = temp->parent;
 									}
 									exit_end = temp;
 
@@ -216,17 +185,17 @@ label_again:
 									temp = entry_end;
 									while(temp->parent != common_parent)
 									{
-										temp = (state_t*)temp->parent;
+										temp = temp->parent;
 									}
 									entry_begin = temp;
 
 									goto label_exit;
 								}
 								//else
-								temp = (state_t*)temp->parent;
+								temp = temp->parent;
 							}
 
-							begin = (state_t*)begin->parent;
+							begin = begin->parent;
 						}
 					}
 
@@ -236,7 +205,7 @@ label_exit:
 	{
 		machine->current_state = exit_begin;
 		post_exit(machine);
-		exit_begin = (state_t*)exit_begin->parent;
+		exit_begin = exit_begin->parent;
 	}
 
 	machine->current_state = exit_begin;
@@ -252,7 +221,7 @@ label_to_parent_exit:
 	{
 		machine->current_state = exit_begin;
 		post_exit(machine);
-		exit_begin = (state_t*)exit_begin->parent;
+		exit_begin = exit_begin->parent;
 	}
 
 	machine->current_state = exit_begin;
@@ -270,10 +239,10 @@ label_entry:
 		post_entry(machine);
 
 		//find next
-		state_t* temp = entry_end;
+		const state_t* temp = entry_end;
 		while(temp->parent != entry_begin)
 		{
-			temp = (state_t*)temp->parent;
+			temp = temp->parent;
 		}
 		entry_begin = temp;
 	}
@@ -289,35 +258,58 @@ label_init:
 
 		if((result != HANDLED()) && (result != UNHANDLED()))
 		{
-			target = (state_t*)result;
+			target = (const state_t*)result;
 			goto label_again;
 		}
 	}
+
+	machine->tick_ms_counter = 0;
+}
+
+
+void sm_init(machine_t* machine,
+			 const state_t** table,
+			 int table_size,
+			 initial_handler_t initial_handler)
+{
+
+    SM_ASSERT(machine != 0, machine, "MACHINE OBJECT IS NULL");
+    SM_ASSERT(table != 0, machine, "TABLE OBJECT IS NULL");
+    SM_ASSERT(initial_handler != 0, machine, "INITIAL HANDLER IS NULL");
+    SM_ASSERT(table_size != 0, machine, "SIZE IS ZERO");
+
+    memset(machine, 0, sizeof(machine_t));
+
+    machine->table = table;
+    machine->table_size = table_size;
+    machine->current_state = 0;
+    machine->top_initial_handler = initial_handler;
+    machine->tick_ms_counter = 0;
 }
 
 void sm_start(machine_t* machine)
 {
-	//run initial handler...
-	int result = machine->top_initial_handler(machine);
+    //run initial handler...
+    int result = machine->top_initial_handler(machine);
 
-	if((result == HANDLED()) || (result == UNHANDLED()))
-	{
-		SM_ASSERT(0, machine, "TOP INITIAL HANDLER MUST TRANSIT TO ANY STATE.");
-	}
+    if((result == HANDLED()) || (result == UNHANDLED()))
+    {
+        SM_ASSERT(0, machine, "TOP INITIAL HANDLER MUST TRANSIT TO ANY STATE.");
+    }
 
-	//else
-	//get the target state
-	state_t* target = (state_t*)result;
+    //else
+    //get the target state
+    const state_t* target = (const state_t*)result;
 
-	//find it from the list
-	if(is_available(machine, target))
-	{
-		transit(machine, target);
-	}
-	else
-	{
-		SM_ASSERT(0, machine, "TOP INITIAL HANDLER DOES NOT TRANSIT TO A VALID STATE.");
-	}
+    //find it from the list
+    if(is_available(machine, target))
+    {
+        transit(machine, target);
+    }
+    else
+    {
+        SM_ASSERT(0, machine, "TOP INITIAL HANDLER DOES NOT TRANSIT TO A VALID STATE.");
+    }
 }
 
 void sm_process(machine_t* machine, event_t event)
@@ -334,7 +326,7 @@ void sm_process(machine_t* machine, event_t event)
 	{
 		//unhandled event...
 		//try to handle event in parents...
-		state_t* parent = (state_t*)machine->current_state->parent;
+		const state_t* parent = machine->current_state->parent;
 
 		while(parent != 0)
 		{
@@ -347,37 +339,39 @@ void sm_process(machine_t* machine, event_t event)
 			else
 				if(result == UNHANDLED())
 				{
-					parent = (state_t*)parent->parent;
+					parent = parent->parent;
 				}
 				else
 				{
+					const state_t* casted_result = (const state_t*)result;
+
 					//transition occured...
-					if(((state_t*)result) == parent)
+					if(casted_result == parent)
 					{
 						//self transtiton by parent...
 						post_exit(machine);
-						machine->current_state = (state_t*)parent;
+						machine->current_state = parent;
 					}
 
 					else
 
 					//self transition over parent
-					if(((state_t*)result) == machine->current_state)
+					if(casted_result == machine->current_state)
 					{
 						while(machine->current_state->parent != parent)
 						{
 							post_exit(machine);
 							if(machine->current_state->parent != 0)
-							machine->current_state = (state_t*)machine->current_state->parent;
+							machine->current_state = machine->current_state->parent;
 							else
 							break;
 						}
 
 						post_exit(machine);
-						machine->current_state = (state_t*)machine->current_state->parent;
+						machine->current_state = machine->current_state->parent;
 					}
 
-					transit(machine, (state_t*)result);
+					transit(machine, casted_result);
 					break;
 				}
 		}
@@ -385,11 +379,15 @@ void sm_process(machine_t* machine, event_t event)
 	else
 		if(result != HANDLED())
 		{
-			transit(machine, (state_t*)result);
+			transit(machine, (const state_t*)result);
 		}
 
 	return;
 }
+
+
+
+static assertion_callback_t assertion_callback;
 
 void sm_assert(machine_t* machine, const char* file_name, int line, const char* message)
 {
@@ -399,4 +397,43 @@ void sm_assert(machine_t* machine, const char* file_name, int line, const char* 
 	}
 }
 
+void sm_set_assertion_callback(assertion_callback_t cb)
+{
+    assertion_callback = cb;
+}
+
+void sm_set_runner(machine_t* machine, void* runner)
+{
+	machine->runner = runner;
+}
+
+void sm_set_context(machine_t* machine, void* ctx)
+{
+	machine->ctx = ctx;
+}
+
+void sm_set_name(machine_t* mach, const char* name, int len)
+{
+	memcpy(mach->name, name, len);
+}
+
+int sm_is_tick_ms_equal(machine_t* mach, int ms_val)
+{
+	if(mach->tick_ms_counter == ms_val)
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
+void sm_reset_tick(machine_t* mach)
+{
+	mach->tick_ms_counter = 0;
+}
+
+void sm_inc_tick(machine_t* mach, int inc)
+{
+	mach->tick_ms_counter += inc;
+}
 
