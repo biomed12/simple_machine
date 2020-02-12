@@ -32,3 +32,7 @@ The machine is cited from the Miro Samek's book, Practical UML StateChart in C a
 
 Notice: If you use this tiny framework in your projects, please make sure your machine runs 
 as you expected in the manner of handling all the types of events. Otherwise, please feedback!
+
+FULLY WORKING EXAMPLE FOR STM32F4 Discovery can be found on:
+
+https://yadi.sk/d/WujTvHN2HvrF3g
