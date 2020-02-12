@@ -7,7 +7,7 @@
 
 #include "exm.h"
 
-int s211_handler(machine_t* mach, event_t e)
+int HANDLER(s211)(machine_t* mach, event_t e)
 {
 	switch (e.id) {
 		case EVT_ID_ENTRY:

@@ -6,7 +6,7 @@
  */
 #include "exm.h"
 
-int s_handler(machine_t* mach, event_t e)
+int HANDLER(s)(machine_t* mach, event_t e)
 {
 	switch (e.id) {
 		case EVT_ID_ENTRY:
@@ -24,16 +24,16 @@ int s_handler(machine_t* mach, event_t e)
 		case EVT_ID_INIT:
 		{
 			append_log("s-init-");
-			extern const state_t s11;
-			return TRANSIT(s11);
+			DECLSTATE(s11);
+			return TRANSIT(STATE(s11));
 		}
 			break;
 
 		case EVT_ID_E:
 		{
 			append_log("s-E:");
-			extern const state_t s11;
-			return TRANSIT(s11);
+			DECLSTATE(s11);
+			return TRANSIT(STATE(s11));
 		}
 
 			break;

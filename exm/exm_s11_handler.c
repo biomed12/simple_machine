@@ -6,7 +6,7 @@
  */
 #include "exm.h"
 
-int s11_handler(machine_t* mach, event_t e)
+int HANDLER(s11)(machine_t* mach, event_t e)
 {
 	exm_ctx_t* ctx = mach->ctx;
 
@@ -33,8 +33,8 @@ int s11_handler(machine_t* mach, event_t e)
 			{
 				ctx->foo = 0;
 				append_log("s11-D:");
-				extern const state_t s1;
-				return TRANSIT(s1);
+				DECLSTATE(s1);
+				return TRANSIT(STATE(s1));
 			}
 		}
 
@@ -43,8 +43,8 @@ int s11_handler(machine_t* mach, event_t e)
 		case EVT_ID_G:
 		{
 			append_log("s11-G:");
-			extern const state_t s211;
-			return TRANSIT(s211);
+			DECLSTATE(s211);
+			return TRANSIT(STATE(s211));
 		}
 
 			break;

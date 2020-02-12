@@ -6,7 +6,7 @@
  */
 #include "exm.h"
 
-int s2_handler(machine_t* mach, event_t e)
+int HANDLER(s2)(machine_t* mach, event_t e)
 {
 	exm_ctx_t* ctx = mach->ctx;
 
@@ -20,8 +20,8 @@ int s2_handler(machine_t* mach, event_t e)
 		case EVT_ID_INIT:
 		{
 			append_log("s2-init-");
-			extern const state_t s211;
-			return TRANSIT(s211);
+			DECLSTATE(s211);
+			return TRANSIT(STATE(s211));
 		}
 			break;
 
