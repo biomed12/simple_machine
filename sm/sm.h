@@ -12,7 +12,7 @@
 #define ADD_STATE(_s) (&_s)
 #define NO_PARENT ((void*)0)
 #define SM_ASSERT(_cond, _machine, _message) if(!(_cond))sm_assert(_machine, __FILE__, __LINE__, _message)
-#define MAKE_NAKED_EVT(_id) {_id, 0, 0, 0, 0}
+#define MAKE_NAKED_EVT(_id) {_id, 0, 0, 0, 0, 0}
 #define HANDLED() 0
 #define UNHANDLED() 1
 #define TRANSIT(_target_state) ((int)&_target_state)
@@ -55,6 +55,7 @@ struct _event_t
 	void* payload;
 	int payload_size;
 	unsigned char is_dynamic;
+	void* additional;
 };
 
 
@@ -94,8 +95,8 @@ struct _machine_t
 	int table_size;
 	const state_t* current_state;
 	initial_handler_t top_initial_handler;
-	unsigned int tick_ms_counter;
-	char name[20];
+	int tick_ms_counter;
+	int schedule_timer;
 
 	void* ctx;
 	void* runner;
@@ -118,11 +119,9 @@ void sm_assert(machine_t* machine, const char* file_name, int line, const char* 
 void sm_set_assertion_callback(assertion_callback_t clb);
 void sm_set_runner(machine_t* machine, void* runner);
 void sm_set_context(machine_t* machine, void* ctx);
-void sm_set_name(machine_t* mach, const char* name, int len);
 
 //tick related
 int sm_is_tick_ms_equal(machine_t* mach, int ms_val);
 void sm_reset_tick(machine_t* mach);
-void sm_inc_tick(machine_t* mach, int inc);
 
 #endif /* SM_H_ */

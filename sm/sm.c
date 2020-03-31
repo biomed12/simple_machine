@@ -6,6 +6,7 @@
  */
 
 #include "sm.h"
+
 #include <string.h>
 
 static int is_available(machine_t* mach, const state_t* s)
@@ -320,6 +321,13 @@ void sm_process(machine_t* machine, event_t event)
 	//make sure main handler set
 	SM_ASSERT(machine->current_state->handler != 0, machine, "STATE HANDLER IS NULL!");
 
+	//
+	if(event.id == EVT_ID_TICK_MS)
+	{
+		SM_ASSERT(event.header > 0, machine, "TICK MS HEADER IS ZERO\r\n");
+		machine->tick_ms_counter += event.header;
+	}
+
 	int result = machine->current_state->handler(machine, event);
 
 	if(result == UNHANDLED())
@@ -412,10 +420,6 @@ void sm_set_context(machine_t* machine, void* ctx)
 	machine->ctx = ctx;
 }
 
-void sm_set_name(machine_t* mach, const char* name, int len)
-{
-	memcpy(mach->name, name, len);
-}
 
 int sm_is_tick_ms_equal(machine_t* mach, int ms_val)
 {
@@ -432,8 +436,4 @@ void sm_reset_tick(machine_t* mach)
 	mach->tick_ms_counter = 0;
 }
 
-void sm_inc_tick(machine_t* mach, int inc)
-{
-	mach->tick_ms_counter += inc;
-}
 
